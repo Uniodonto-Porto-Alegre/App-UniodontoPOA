@@ -122,7 +122,7 @@ class ReembolsoFormSteps {
               border: Border.all(color: Colors.grey[300]!),
             ),
             child: DropdownButtonFormField<BeneficiarioModel>(
-              value: selectedBeneficiario,
+              initialValue: selectedBeneficiario,
               hint: const Text('Selecione o Beneficiário'),
               isExpanded: true,
               decoration: InputDecoration(
@@ -572,15 +572,15 @@ class ReembolsoFormSteps {
               color: AppColors.vinhoUltraUniodonto.withOpacity(0.2),
             ),
           ),
-          child: Column(
+          child: const Column(
             children: [
-              const Icon(
+              Icon(
                 Icons.check_circle_outline,
                 size: 64,
                 color: AppColors.vinhoUltraUniodonto,
               ),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: 16),
+              Text(
                 'Revisão Final',
                 style: TextStyle(
                   fontSize: 24,
@@ -588,8 +588,8 @@ class ReembolsoFormSteps {
                   color: AppColors.vinhoUltraUniodonto,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: 8),
+              Text(
                 'Por favor, revise todas as informações antes de enviar sua solicitação.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),

@@ -55,7 +55,7 @@ class MapWidget extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.location_on,
                     color: AppColors.vinhoMedioUniodonto,
                     size: 16,
@@ -64,7 +64,7 @@ class MapWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       addressInfo!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.vinhoMedioUniodonto,
                         fontWeight: FontWeight.w500,

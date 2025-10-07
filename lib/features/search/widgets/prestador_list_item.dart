@@ -60,7 +60,7 @@ class PrestadorListItem extends StatelessWidget {
             // Header do card com gradiente
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
                     AppColors.vinhoMedioUniodonto,
@@ -69,7 +69,7 @@ class PrestadorListItem extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
@@ -231,7 +231,7 @@ class PrestadorListItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.contact_phone,
                 size: 18,
                 color: AppColors.vinhoUltraUniodonto,
@@ -383,7 +383,7 @@ class PrestadorListItem extends StatelessWidget {
                       Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
                               AppColors.vinhoUltraUniodonto,

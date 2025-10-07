@@ -14,26 +14,89 @@ class OdontosferaAuthService {
     'Content-Type': 'application/json',
   };
 
-  /// Realiza login na API da Odontosfera
-  /// Retorna OdontosferaLoginResult com o resultado da autenticação
-  static Future<OdontosferaLoginResult> login(
+  /// Realiza a validação de credenciais
+  /// - Mobile: Chama a API real
+  /// - Web/Chrome: Simula resposta para apresentação
+  static Future<OdontosferaAuthResult> validateCredentials(
+    String username,
+    String password,
+  ) async {
+    // Validação de entrada
+    if (username.isEmpty || password.isEmpty) {
+      return const OdontosferaAuthResult(
+        isValid: false,
+        message: 'Usuário e senha são obrigatórios.',
+      );
+    }
+
+    // Se estiver rodando no web (Chrome) para apresentação, simula login
+    if (kIsWeb) {
+      return _simulateWebLogin(username, password);
+    }
+
+    // Código original para mobile
+    return _performMobileLogin(username, password);
+  }
+
+  /// Simula login para apresentação web
+  static Future<OdontosferaAuthResult> _simulateWebLogin(
+    String username,
+    String password,
+  ) async {
+    debugPrint('🖥️ Executando no Chrome - Simulando login para apresentação');
+    debugPrint('🔐 Validando credenciais para usuário: $username');
+
+    // Simula delay da API
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Simula alguns casos de teste
+    if (username.toLowerCase() == 'demo' && password == 'demo123') {
+      debugPrint('✅ Login demo realizado com sucesso');
+      return const OdontosferaAuthResult(
+        isValid: true,
+        message: 'Login demo realizado com sucesso',
+      );
+    }
+
+    // Para CPFs válidos (11 dígitos), aceita qualquer senha
+    if (RegExp(
+      r'^\d{11}$',
+    ).hasMatch(username.replaceAll(RegExp(r'[.-]'), ''))) {
+      debugPrint('✅ CPF válido - Login simulado com sucesso');
+      return const OdontosferaAuthResult(
+        isValid: true,
+        message: 'Credenciais válidas (simulação)',
+      );
+    }
+
+    // Para qualquer outro usuário com senha "123456", aceita
+    if (password == '123456') {
+      debugPrint('✅ Senha padrão aceita - Login simulado');
+      return const OdontosferaAuthResult(
+        isValid: true,
+        message: 'Login realizado com sucesso (demonstração)',
+      );
+    }
+
+    // Simula erro de credenciais inválidas
+    debugPrint('❌ Credenciais inválidas (simulação)');
+    return const OdontosferaAuthResult(
+      isValid: false,
+      message:
+          'CPF ou senha incorretos. Para demo, use: demo/demo123 ou qualquer CPF/123456',
+    );
+  }
+
+  /// Login original para dispositivos mobile
+  static Future<OdontosferaAuthResult> _performMobileLogin(
     String username,
     String password,
   ) async {
     try {
-      // Validação de entrada
-      if (username.isEmpty || password.isEmpty) {
-        return OdontosferaLoginResult(
-          success: false,
-          userData: null,
-          message: 'Usuário e senha são obrigatórios.',
-        );
-      }
-
       // Formata os dados conforme especificado (com < >)
       final body = {'login': '<$username>', 'senha': '<$password>'};
 
-      debugPrint('Tentando login com usuário: $username');
+      debugPrint('📱 Executando login mobile para usuário: $username');
 
       final response = await http
           .post(Uri.parse(_baseUrl), headers: _headers, body: json.encode(body))
@@ -47,103 +110,99 @@ class OdontosferaAuthService {
             },
           );
 
-      debugPrint('Status da resposta: ${response.statusCode}');
-      debugPrint('Corpo da resposta: ${response.body}');
+      debugPrint('📡 Status da resposta: ${response.statusCode}');
 
+      // FOCO APENAS NA VALIDAÇÃO DE CREDENCIAIS
       if (response.statusCode == 200) {
         try {
           final responseData = json.decode(response.body);
 
-          // Verifica se a resposta contém dados válidos
+          // Verifica se a resposta tem estrutura básica válida
           if (responseData != null && responseData is Map<String, dynamic>) {
-            // Verifica se há beneficiários ou dados de usuário
             final beneficiarios = responseData['beneficiarios'] as List?;
             final usuarioLogado = responseData['usuarioLogado'] as Map?;
 
-            if ((beneficiarios != null && beneficiarios.isNotEmpty) ||
-                (usuarioLogado != null)) {
-              return OdontosferaLoginResult(
-                success: true,
-                userData: responseData,
-                message: 'Login realizado com sucesso',
+            // Se tem estrutura de beneficiários ou usuário logado = credenciais válidas
+            if ((beneficiarios != null) || (usuarioLogado != null)) {
+              debugPrint('✅ Credenciais validadas com sucesso');
+
+              return const OdontosferaAuthResult(
+                isValid: true,
+                message: 'Credenciais válidas',
               );
             } else {
-              return OdontosferaLoginResult(
-                success: false,
-                userData: null,
-                message: 'Dados de usuário não encontrados na resposta.',
+              debugPrint('❌ Estrutura de resposta inválida');
+              return const OdontosferaAuthResult(
+                isValid: false,
+                message: 'Resposta inválida do servidor de autenticação.',
               );
             }
           } else {
-            return OdontosferaLoginResult(
-              success: false,
-              userData: null,
+            debugPrint('❌ Resposta não é um objeto JSON válido');
+            return const OdontosferaAuthResult(
+              isValid: false,
               message: 'Formato de resposta inválido do servidor.',
             );
           }
         } catch (e) {
-          debugPrint('Erro ao processar JSON: $e');
-          return OdontosferaLoginResult(
-            success: false,
-            userData: null,
+          debugPrint('❌ Erro ao processar resposta: $e');
+          return const OdontosferaAuthResult(
+            isValid: false,
             message: 'Erro ao processar resposta do servidor.',
           );
         }
       } else if (response.statusCode == 401) {
-        return OdontosferaLoginResult(
-          success: false,
-          userData: null,
+        debugPrint('❌ Credenciais inválidas (401)');
+        return const OdontosferaAuthResult(
+          isValid: false,
           message: 'CPF ou senha incorretos. Verifique suas credenciais.',
         );
       } else if (response.statusCode == 400) {
-        return OdontosferaLoginResult(
-          success: false,
-          userData: null,
+        debugPrint('❌ Dados inválidos (400)');
+        return const OdontosferaAuthResult(
+          isValid: false,
           message: 'Dados de login inválidos. Verifique os campos preenchidos.',
         );
       } else if (response.statusCode == 404) {
-        return OdontosferaLoginResult(
-          success: false,
-          userData: null,
+        debugPrint('❌ Serviço não encontrado (404)');
+        return const OdontosferaAuthResult(
+          isValid: false,
           message: 'Serviço não encontrado. Tente novamente mais tarde.',
         );
       } else if (response.statusCode >= 500) {
-        return OdontosferaLoginResult(
-          success: false,
-          userData: null,
+        debugPrint('❌ Erro do servidor (${response.statusCode})');
+        return OdontosferaAuthResult(
+          isValid: false,
           message:
               'Erro no servidor (${response.statusCode}). Tente novamente em alguns minutos.',
         );
       } else {
-        return OdontosferaLoginResult(
-          success: false,
-          userData: null,
+        debugPrint('❌ Erro inesperado (${response.statusCode})');
+        return OdontosferaAuthResult(
+          isValid: false,
           message: 'Erro inesperado (${response.statusCode}). Tente novamente.',
         );
       }
     } on TimeoutException catch (e) {
-      debugPrint('Timeout: $e');
-      return OdontosferaLoginResult(
-        success: false,
-        userData: null,
+      debugPrint('⏱️ Timeout: $e');
+      return const OdontosferaAuthResult(
+        isValid: false,
         message: 'Tempo limite excedido. Verifique sua conexão.',
       );
     } on SocketException catch (e) {
-      debugPrint('Erro de conexão: $e');
-      return OdontosferaLoginResult(
-        success: false,
-        userData: null,
+      debugPrint('🌐 Erro de conexão: $e');
+      return const OdontosferaAuthResult(
+        isValid: false,
         message: 'Sem conexão com a internet. Verifique sua rede.',
       );
     } on FormatException catch (e) {
-      debugPrint('Erro de formato: $e');
-      return OdontosferaLoginResult(
-        success: false,
-        userData: null,
+      debugPrint('📄 Erro de formato: $e');
+      return const OdontosferaAuthResult(
+        isValid: false,
         message: 'Erro na resposta do servidor.',
       );
     } catch (e) {
-      debugPrint('Erro geral: $e');
+      debugPrint('💥 Erro geral: $e');
       String errorMessage = 'Erro inesperado: $e';
 
       // Personaliza mensagens para erros conhecidos
@@ -155,16 +214,41 @@ class OdontosferaAuthService {
         errorMessage = 'Não foi possível conectar ao servidor.';
       }
 
-      return OdontosferaLoginResult(
-        success: false,
-        userData: null,
-        message: errorMessage,
-      );
+      return OdontosferaAuthResult(isValid: false, message: errorMessage);
     }
+  }
+
+  // MÉTODO LEGADO MANTIDO PARA COMPATIBILIDADE
+  // Apenas chama o novo método de validação
+  static Future<OdontosferaLoginResult> login(
+    String username,
+    String password,
+  ) async {
+    final authResult = await validateCredentials(username, password);
+
+    return OdontosferaLoginResult(
+      success: authResult.isValid,
+      userData: null, // Não retorna dados do usuário
+      message: authResult.message,
+    );
   }
 }
 
-/// Classe que representa o resultado do login
+/// Classe simplificada que representa APENAS o resultado da autenticação
+class OdontosferaAuthResult {
+  final bool isValid;
+  final String message;
+
+  const OdontosferaAuthResult({required this.isValid, required this.message});
+
+  @override
+  String toString() {
+    return 'OdontosferaAuthResult(isValid: $isValid, message: $message)';
+  }
+}
+
+/// Classe mantida para compatibilidade com código existente
+/// MAS NÃO EXTRAI MAIS DADOS DO USUÁRIO
 class OdontosferaLoginResult {
   final bool success;
   final Map<String, dynamic>? userData;
@@ -176,67 +260,13 @@ class OdontosferaLoginResult {
     required this.message,
   });
 
-  /// Extrai dados básicos do usuário da resposta
-  OdontosferaUserData? get userBasicData {
-    if (!success || userData == null) return null;
-
-    try {
-      final usuarioLogado = userData!['usuarioLogado'] as Map<String, dynamic>?;
-      final beneficiarios = userData!['beneficiarios'] as List<dynamic>?;
-
-      // Prioriza dados dos beneficiários se disponíveis
-      if (beneficiarios != null && beneficiarios.isNotEmpty) {
-        final primeiroUsuario = beneficiarios[0] as Map<String, dynamic>;
-        final dadosPessoais =
-            primeiroUsuario['dadosPessoais'] as Map<String, dynamic>?;
-        final dadosPlano =
-            primeiroUsuario['dadosDoPlano'] as Map<String, dynamic>?;
-        final contato = dadosPessoais?['contato'] as Map<String, dynamic>?;
-        final tipoUsuario = dadosPlano?['tipoUsuario'] as Map<String, dynamic>?;
-
-        return OdontosferaUserData(
-          nome: _getString(dadosPessoais, 'nome'),
-          cpf: _getString(dadosPessoais, 'cpf'),
-          email: _getString(contato, 'email'),
-          telefone: _getString(contato, 'telefoneCelular'),
-          matricula: _getString(dadosPlano, 'matricula'),
-          tipoUsuario: _getString(tipoUsuario, 'descricao'),
-          planoDescricao: _getString(dadosPlano, 'descricao'),
-        );
-      }
-
-      // Fallback para dados do usuário logado
-      if (usuarioLogado != null) {
-        final integracao = usuarioLogado['integracao'] as Map<String, dynamic>?;
-        final contato = usuarioLogado['contato'] as Map<String, dynamic>?;
-
-        return OdontosferaUserData(
-          nome: _getString(integracao, 'nome'),
-          cpf: _getString(integracao, 'cpf'),
-          email: _getString(contato, 'email'),
-          telefone: _getString(contato, 'telefoneCelular'),
-          matricula: '',
-          tipoUsuario: _getString(integracao, 'observacao'),
-          planoDescricao: '',
-        );
-      }
-
-      return null;
-    } catch (e) {
-      debugPrint('Erro ao extrair dados do usuário: $e');
-      return null;
-    }
-  }
-
-  /// Helper para extrair string de forma segura
-  static String _getString(Map<String, dynamic>? map, String key) {
-    if (map == null) return '';
-    final value = map[key];
-    return value?.toString().trim() ?? '';
-  }
+  /// REMOVIDO: Não extrai mais dados do usuário
+  /// A coleta de dados será feita em outra tela após o login
+  OdontosferaUserData? get userBasicData => null;
 }
 
-/// Classe com dados básicos extraídos da resposta
+/// Classe mantida apenas para compatibilidade
+/// Os dados reais serão coletados em outra tela
 class OdontosferaUserData {
   final String nome;
   final String cpf;
@@ -271,31 +301,5 @@ class OdontosferaUserData {
   @override
   String toString() {
     return 'OdontosferaUserData(nome: $nome, cpf: $cpf, email: $email, matricula: $matricula)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is OdontosferaUserData &&
-        other.nome == nome &&
-        other.cpf == cpf &&
-        other.email == email &&
-        other.telefone == telefone &&
-        other.matricula == matricula &&
-        other.tipoUsuario == tipoUsuario &&
-        other.planoDescricao == planoDescricao;
-  }
-
-  @override
-  int get hashCode {
-    return Object.hash(
-      nome,
-      cpf,
-      email,
-      telefone,
-      matricula,
-      tipoUsuario,
-      planoDescricao,
-    );
   }
 }

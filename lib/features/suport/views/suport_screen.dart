@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_styles.dart';
@@ -271,7 +273,7 @@ class _SupportScreenState extends State<SupportScreen>
       ),
       child: Column(
         children: [
-          Icon(
+          const Icon(
             Icons.help_outline_rounded,
             size: 48,
             color: AppColors.vinhoMedioUniodonto,
@@ -394,7 +396,7 @@ class _SupportScreenState extends State<SupportScreen>
           // Botão para chamar no WhatsApp
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
                   AppColors.vinhoUltraUniodonto,
                   AppColors.vinhoMedioUniodonto,

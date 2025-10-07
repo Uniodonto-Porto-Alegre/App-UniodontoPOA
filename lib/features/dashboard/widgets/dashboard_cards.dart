@@ -548,10 +548,10 @@ class ModernizedMainCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _navigateToGeolocation() {
+    void navigateToGeolocation() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => GeolocationView()),
+        MaterialPageRoute(builder: (context) => const GeolocationView()),
       );
     }
 
@@ -576,7 +576,7 @@ class ModernizedMainCard extends StatelessWidget {
             icon: Icons.location_on_outlined,
             text: 'Dentistas próximos',
             textStyle: const TextStyle(color: AppColors.vinhoMedioUniodonto),
-            onTap: _navigateToGeolocation,
+            onTap: navigateToGeolocation,
             color: AppColors.vinhoMedioUniodonto,
           ),
         ],
@@ -594,45 +594,45 @@ class DashboardMainContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Funções de navegação
-    void _navigateToUrgency() {
+    void navigateToUrgency() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => UrgencyScreen()),
+        MaterialPageRoute(builder: (context) => const UrgencyScreen()),
       );
     }
 
-    void _navigateToUsage() {
+    void navigateToUsage() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const OrcamentosScreen()),
       );
     }
 
-    void _navigateToSuport() {
+    void navigateToSuport() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SupportScreen()),
       );
     }
 
-    void _navigateToFinance() {
+    void navigateToFinance() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const FinanceiroScreen()),
       );
     }
 
-    void _navigateToRenova() {
+    void navigateToRenova() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => RenovaScreen()),
+        MaterialPageRoute(builder: (context) => const RenovaScreen()),
       );
     }
 
-    void _navigateToSearch() {
+    void navigateToSearch() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SearchScreen()),
+        MaterialPageRoute(builder: (context) => const SearchScreen()),
       );
     }
 
@@ -658,25 +658,25 @@ class DashboardMainContent extends StatelessWidget {
                   icon: Icons.local_hospital_rounded,
                   label: 'Dentistas',
                   color: AppColors.cianoUniodonto,
-                  onTap: _navigateToSearch,
+                  onTap: navigateToSearch,
                 ),
                 DashboardQuickAction(
                   icon: Icons.analytics_rounded,
                   label: 'Utilização',
                   color: AppColors.roxoUniodonto,
-                  onTap: _navigateToUsage,
+                  onTap: navigateToUsage,
                 ),
                 DashboardQuickAction(
                   icon: Icons.account_balance_wallet_rounded,
                   label: 'Financeiro',
                   color: AppColors.vinhoMedioUniodonto,
-                  onTap: _navigateToFinance,
+                  onTap: navigateToFinance,
                 ),
                 DashboardQuickAction(
                   icon: Icons.headset_mic_rounded,
                   label: 'Suporte',
                   color: Colors.orange,
-                  onTap: _navigateToSuport,
+                  onTap: navigateToSuport,
                 ),
               ],
             ),
@@ -699,7 +699,7 @@ class DashboardMainContent extends StatelessWidget {
                   title: 'Encontrar Dentistas',
                   subtitle: 'Localize dentistas credenciados próximos a você',
                   color: AppColors.cianoUniodonto,
-                  onTap: _navigateToSearch,
+                  onTap: navigateToSearch,
                 ),
                 DashboardCard(
                   icon: Icons.analytics_rounded,
@@ -707,28 +707,28 @@ class DashboardMainContent extends StatelessWidget {
                   subtitle:
                       'Consulte seus procedimentos e consultas realizadas',
                   color: AppColors.roxoUniodonto,
-                  onTap: _navigateToUsage,
+                  onTap: navigateToUsage,
                 ),
                 DashboardCard(
                   icon: Icons.account_balance_wallet_rounded,
                   title: 'Gestão Financeira',
                   subtitle: 'Extrato, faturas e histórico de pagamentos',
                   color: AppColors.vinhoMedioUniodonto,
-                  onTap: _navigateToFinance,
+                  onTap: navigateToFinance,
                 ),
                 DashboardCard(
                   icon: Icons.six_mp_outlined,
                   title: 'Renova Implantes',
                   subtitle: 'Implantes Dentários',
                   color: Colors.orange,
-                  onTap: _navigateToRenova,
+                  onTap: navigateToRenova,
                 ),
                 DashboardCard(
                   icon: Icons.medical_services,
                   title: 'Urgência Odontológica',
                   subtitle: 'Pronto atendimento para urgências odontológicas',
                   color: AppColors.pessegoUniodonto,
-                  onTap: _navigateToUrgency,
+                  onTap: navigateToUrgency,
                 ),
               ],
             ),

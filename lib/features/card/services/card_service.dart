@@ -23,8 +23,6 @@ class CardService {
         return [];
       }
     } catch (e) {
-      // In case of any error during the process, log it and return an empty list
-      print('Erro ao buscar dados do beneficiário: $e');
       return [];
     }
   }

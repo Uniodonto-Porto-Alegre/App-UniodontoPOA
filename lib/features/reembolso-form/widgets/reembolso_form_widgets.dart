@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -470,8 +469,6 @@ class ReembolsoFormWidgets {
 
 class ReembolsoFormUtils {
   static void showErrorSnackbar(BuildContext context, String message) {
-    print('Mostrando erro para usuário: $message');
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(

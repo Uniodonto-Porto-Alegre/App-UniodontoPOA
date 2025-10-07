@@ -401,7 +401,7 @@ class _CardSelectionScreenState extends State<CardSelectionScreen>
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                '${_formatCPF(beneficiario.cpf)}',
+                                _formatCPF(beneficiario.cpf),
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,

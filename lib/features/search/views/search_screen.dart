@@ -36,18 +36,22 @@ class _SearchScreenState extends State<SearchScreen>
   bool _hasMore = true;
   int _currentPage = 1;
   Pagination? _pagination;
+  bool _isFormExpanded = true;
 
   // Controladores de animação
   late AnimationController _mainAnimationController;
   late AnimationController _headerController;
   late AnimationController _buttonController;
+  late AnimationController _formController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _headerSlideAnimation;
   late Animation<double> _buttonScaleAnimation;
+  late Animation<double> _formAnimation;
 
-  // Mapeamento de estados (sigla -> nome completo)
+  // Mapeamento de estados (sigla -> nome completo) com RS como primeira opção
   final Map<String, String> _estadosMap = {
+    'RS': 'Rio Grande do Sul',
     'AC': 'Acre',
     'AL': 'Alagoas',
     'AP': 'Amapá',
@@ -68,7 +72,6 @@ class _SearchScreenState extends State<SearchScreen>
     'PI': 'Piauí',
     'RJ': 'Rio de Janeiro',
     'RN': 'Rio Grande do Norte',
-    'RS': 'Rio Grande do Sul',
     'RO': 'Rondônia',
     'RR': 'Roraima',
     'SC': 'Santa Catarina',
@@ -77,8 +80,9 @@ class _SearchScreenState extends State<SearchScreen>
     'TO': 'Tocantins',
   };
 
-  // Lista de siglas de estados (para uso interno da API)
+  // Lista de siglas de estados (RS primeiro)
   final List<String> _estadosSiglas = [
+    'RS', // Rio Grande do Sul primeiro
     'AC',
     'AL',
     'AP',
@@ -99,7 +103,6 @@ class _SearchScreenState extends State<SearchScreen>
     'PI',
     'RJ',
     'RN',
-    'RS',
     'RO',
     'RR',
     'SC',
@@ -107,6 +110,37 @@ class _SearchScreenState extends State<SearchScreen>
     'SE',
     'TO',
   ];
+
+  // Mapa de capitais dos estados brasileiros
+  final Map<String, String> _capitaisMap = {
+    'RS': 'Porto Alegre',
+    'AC': 'Rio Branco',
+    'AL': 'Maceió',
+    'AP': 'Macapá',
+    'AM': 'Manaus',
+    'BA': 'Salvador',
+    'CE': 'Fortaleza',
+    'DF': 'Brasília',
+    'ES': 'Vitória',
+    'GO': 'Goiânia',
+    'MA': 'São Luís',
+    'MT': 'Cuiabá',
+    'MS': 'Campo Grande',
+    'MG': 'Belo Horizonte',
+    'PA': 'Belém',
+    'PB': 'João Pessoa',
+    'PR': 'Curitiba',
+    'PE': 'Recife',
+    'PI': 'Teresina',
+    'RJ': 'Rio de Janeiro',
+    'RN': 'Natal',
+    'RO': 'Porto Velho',
+    'RR': 'Boa Vista',
+    'SC': 'Florianópolis',
+    'SP': 'São Paulo',
+    'SE': 'Aracaju',
+    'TO': 'Palmas',
+  };
 
   @override
   void initState() {
@@ -131,6 +165,11 @@ class _SearchScreenState extends State<SearchScreen>
       vsync: this,
     );
 
+    _formController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _mainAnimationController, curve: Curves.easeOut),
     );
@@ -151,8 +190,13 @@ class _SearchScreenState extends State<SearchScreen>
       CurvedAnimation(parent: _buttonController, curve: Curves.easeInOut),
     );
 
+    _formAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _formController, curve: Curves.easeInOut),
+    );
+
     _headerController.forward();
     _mainAnimationController.forward();
+    _formController.forward();
   }
 
   void _initializeScrollListener() {
@@ -176,10 +220,21 @@ class _SearchScreenState extends State<SearchScreen>
     _mainAnimationController.dispose();
     _headerController.dispose();
     _buttonController.dispose();
+    _formController.dispose();
     super.dispose();
   }
 
-  // Função para capitalizar a primeira letra de cada palavra
+  void _toggleFormExpansion() {
+    setState(() {
+      _isFormExpanded = !_isFormExpanded;
+      if (_isFormExpanded) {
+        _formController.forward();
+      } else {
+        _formController.reverse();
+      }
+    });
+  }
+
   String _capitalizeCityName(String cityName) {
     if (cityName.isEmpty) return cityName;
 
@@ -202,6 +257,13 @@ class _SearchScreenState extends State<SearchScreen>
       _currentPage = 1;
       _hasMore = true;
     });
+
+    if (_isFormExpanded) {
+      setState(() {
+        _isFormExpanded = false;
+      });
+      _formController.reverse();
+    }
 
     try {
       final response = await _prestadorService.fetchPrestadores(
@@ -282,13 +344,20 @@ class _SearchScreenState extends State<SearchScreen>
           .toSet()
           .toList();
 
-      // Capitaliza os nomes das cidades e ordena
       final cidadesCapitalizadas = cidades
           .map((cidade) => _capitalizeCityName(cidade))
           .toSet()
           .toList();
 
-      cidadesCapitalizadas.sort();
+      // Ordena as cidades colocando a capital primeiro
+      final capitalEstado = _capitaisMap[estadoSigla];
+      cidadesCapitalizadas.sort((a, b) {
+        if (capitalEstado != null) {
+          if (a == capitalEstado) return -1;
+          if (b == capitalEstado) return 1;
+        }
+        return a.compareTo(b);
+      });
 
       setState(() {
         _cidades = cidadesCapitalizadas;
@@ -307,7 +376,7 @@ class _SearchScreenState extends State<SearchScreen>
     try {
       final allPrestadores = await _prestadorService.fetchAllPrestadores(
         estado: _selectedEstado!,
-        cidade: cidade.toLowerCase(), // Envia em lowercase para a API
+        cidade: cidade.toLowerCase(),
       );
       final bairros = allPrestadores
           .map((p) => p.bairro ?? '')
@@ -315,7 +384,6 @@ class _SearchScreenState extends State<SearchScreen>
           .toSet()
           .toList();
 
-      // Capitaliza os nomes dos bairros e ordena
       final bairrosCapitalizados = bairros
           .map((bairro) => _capitalizeCityName(bairro))
           .toSet()
@@ -401,15 +469,15 @@ class _SearchScreenState extends State<SearchScreen>
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(),
+              _buildCompactHeader(),
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.only(top: 20),
+                  margin: const EdgeInsets.only(top: 12),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF8F9FA),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
                   ),
                   child: AnimatedBuilder(
@@ -430,14 +498,14 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildCompactHeader() {
     return AnimatedBuilder(
       animation: _headerSlideAnimation,
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _headerSlideAnimation.value),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Column(
               children: [
                 Row(
@@ -456,6 +524,7 @@ class _SearchScreenState extends State<SearchScreen>
                       ),
                     ),
                     const Spacer(),
+
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -487,7 +556,7 @@ class _SearchScreenState extends State<SearchScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 16),
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -495,17 +564,17 @@ class _SearchScreenState extends State<SearchScreen>
                       'Encontre seu Dentista',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         letterSpacing: -0.5,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Text(
                       'Localize profissionais credenciados próximos a você',
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -526,24 +595,23 @@ class _SearchScreenState extends State<SearchScreen>
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: _buildSearchForm(),
+            child: _buildCollapsibleSearchForm(),
           ),
         ),
         if (_isLoading)
           SliverToBoxAdapter(child: _buildLoadingIndicator())
         else if (_prestadores.isNotEmpty)
           _buildResultsSliver()
-        else if (_prestadores.isEmpty && !_isLoading)
+        else if (_prestadores.isEmpty && !_isLoading && !_isFormExpanded)
           SliverToBoxAdapter(child: _buildEmptyState()),
       ],
     );
   }
 
-  Widget _buildSearchForm() {
+  Widget _buildCollapsibleSearchForm() {
     return SlideTransition(
       position: _slideAnimation,
       child: Container(
-        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
@@ -556,66 +624,122 @@ class _SearchScreenState extends State<SearchScreen>
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Localização', Icons.location_on_rounded),
-            const SizedBox(height: 16),
-
-            _buildModernEstadoDropdown(),
-            const SizedBox(height: 16),
-
-            _buildModernCidadeDropdown(),
-            const SizedBox(height: 16),
-
-            _buildModernBairroDropdown(),
-
-            const SizedBox(height: 32),
-
-            _buildSectionTitle('Dados do Profissional', Icons.person_rounded),
-            const SizedBox(height: 16),
-
-            _buildModernTextField(
-              _nomeController,
-              'Nome do Prestador',
-              Icons.person_rounded,
-            ),
-            const SizedBox(height: 16),
-
-            _buildModernTextField(
-              _croController,
-              'CRO',
-              Icons.badge_rounded,
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-
-            _buildModernTextField(
-              _areaAtuacaoController,
-              'Área de Atuação',
-              Icons.medical_services_rounded,
-            ),
-
-            const SizedBox(height: 32),
-
-            _buildActionButtons(),
-
-            if (_prestadores.isNotEmpty || _isLoading) ...[
-              const SizedBox(height: 32),
-              Container(
-                height: 1,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      AppColors.vinhoUltraUniodonto.withOpacity(0.2),
-                      Colors.transparent,
-                    ],
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.vinhoUltraUniodonto.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.tune_rounded,
+                      color: AppColors.vinhoUltraUniodonto,
+                      size: 20,
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Filtros de Pesquisa',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3748),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ),
+                  if (_prestadores.isNotEmpty)
+                    IconButton(
+                      onPressed: _toggleFormExpansion,
+                      icon: AnimatedRotation(
+                        turns: _isFormExpanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 300),
+                        child: const Icon(
+                          Icons.expand_more_rounded,
+                          color: AppColors.vinhoUltraUniodonto,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: 24),
-              _buildResultsHeader(),
-            ],
+            ),
+            AnimatedBuilder(
+              animation: _formAnimation,
+              builder: (context, child) {
+                return SizeTransition(
+                  sizeFactor: _formAnimation,
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      bottom: 24,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(
+                          'Localização',
+                          Icons.location_on_rounded,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildModernEstadoDropdown(),
+                        const SizedBox(height: 16),
+
+                        _buildModernCidadeDropdown(),
+                        const SizedBox(height: 16),
+
+                        _buildModernBairroDropdown(),
+
+                        const SizedBox(height: 32),
+
+                        _buildSectionTitle(
+                          'Dados do Profissional',
+                          Icons.person_rounded,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildModernTextField(
+                          _nomeController,
+                          'Nome do Prestador',
+                          Icons.person_rounded,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildModernTextField(
+                          _croController,
+                          'CRO',
+                          Icons.badge_rounded,
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildModernTextField(
+                          _areaAtuacaoController,
+                          'Área de Atuação',
+                          Icons.medical_services_rounded,
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        _buildActionButtons(),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // REMOVIDO: Widget _buildSearchSummary() que mostrava o total de prestadores
+            // if (!_isFormExpanded && _prestadores.isNotEmpty)
+            //   Container(
+            //     padding: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
+            //     child: _buildSearchSummary(),
+            //   ),
           ],
         ),
       ),
@@ -665,6 +789,8 @@ class _SearchScreenState extends State<SearchScreen>
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => _search(),
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
@@ -701,7 +827,6 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  // Dropdown personalizado para Estados
   Widget _buildModernEstadoDropdown() {
     return Container(
       decoration: BoxDecoration(
@@ -729,7 +854,7 @@ class _SearchScreenState extends State<SearchScreen>
             if (newValue != null) _updateCidades(newValue);
           });
         },
-        icon: Icon(
+        icon: const Icon(
           Icons.keyboard_arrow_down_rounded,
           color: AppColors.vinhoUltraUniodonto,
         ),
@@ -743,7 +868,7 @@ class _SearchScreenState extends State<SearchScreen>
         items: _estadosSiglas.map<DropdownMenuItem<String>>((String sigla) {
           return DropdownMenuItem<String>(
             value: sigla,
-            child: Text(_estadosMap[sigla] ?? sigla), // Exibe nome completo
+            child: Text(_estadosMap[sigla] ?? sigla),
           );
         }).toList(),
         decoration: InputDecoration(
@@ -754,7 +879,7 @@ class _SearchScreenState extends State<SearchScreen>
               color: AppColors.vinhoUltraUniodonto.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.map_rounded,
               color: AppColors.vinhoUltraUniodonto,
               size: 20,
@@ -770,7 +895,6 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  // Dropdown personalizado para Cidades
   Widget _buildModernCidadeDropdown() {
     return Container(
       decoration: BoxDecoration(
@@ -800,7 +924,7 @@ class _SearchScreenState extends State<SearchScreen>
                   if (newValue != null) _updateBairros(newValue);
                 });
               },
-        icon: Icon(
+        icon: const Icon(
           Icons.keyboard_arrow_down_rounded,
           color: AppColors.vinhoUltraUniodonto,
         ),
@@ -812,10 +936,7 @@ class _SearchScreenState extends State<SearchScreen>
           color: Color(0xFF2D3748),
         ),
         items: _cidades.map<DropdownMenuItem<String>>((String cidade) {
-          return DropdownMenuItem<String>(
-            value: cidade,
-            child: Text(cidade), // Já capitalizado
-          );
+          return DropdownMenuItem<String>(value: cidade, child: Text(cidade));
         }).toList(),
         decoration: InputDecoration(
           prefixIcon: Container(
@@ -825,7 +946,7 @@ class _SearchScreenState extends State<SearchScreen>
               color: AppColors.vinhoUltraUniodonto.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.location_city_rounded,
               color: AppColors.vinhoUltraUniodonto,
               size: 20,
@@ -841,7 +962,6 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  // Dropdown personalizado para Bairros
   Widget _buildModernBairroDropdown() {
     return Container(
       decoration: BoxDecoration(
@@ -868,7 +988,7 @@ class _SearchScreenState extends State<SearchScreen>
             : (String? newValue) {
                 setState(() => _selectedBairro = newValue);
               },
-        icon: Icon(
+        icon: const Icon(
           Icons.keyboard_arrow_down_rounded,
           color: AppColors.vinhoUltraUniodonto,
         ),
@@ -880,10 +1000,7 @@ class _SearchScreenState extends State<SearchScreen>
           color: Color(0xFF2D3748),
         ),
         items: _bairros.map<DropdownMenuItem<String>>((String bairro) {
-          return DropdownMenuItem<String>(
-            value: bairro,
-            child: Text(bairro), // Já capitalizado
-          );
+          return DropdownMenuItem<String>(value: bairro, child: Text(bairro));
         }).toList(),
         decoration: InputDecoration(
           prefixIcon: Container(
@@ -893,7 +1010,7 @@ class _SearchScreenState extends State<SearchScreen>
               color: AppColors.vinhoUltraUniodonto.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.home_work_rounded,
               color: AppColors.vinhoUltraUniodonto,
               size: 20,
@@ -933,7 +1050,7 @@ class _SearchScreenState extends State<SearchScreen>
                       width: 1.5,
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
@@ -941,7 +1058,7 @@ class _SearchScreenState extends State<SearchScreen>
                         color: AppColors.vinhoUltraUniodonto,
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         'Limpar Filtros',
                         style: TextStyle(
@@ -1009,52 +1126,6 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  Widget _buildResultsHeader() {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(
-            Icons.search_rounded,
-            color: Colors.green,
-            size: 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-        const Text(
-          'Resultados da Pesquisa',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3748),
-            letterSpacing: -0.3,
-          ),
-        ),
-        const Spacer(),
-        if (_prestadores.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.vinhoUltraUniodonto.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '${_prestadores.length} encontrado${_prestadores.length > 1 ? 's' : ''}',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.vinhoUltraUniodonto,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
   Widget _buildLoadingIndicator() {
     return const Center(
       child: Padding(
@@ -1102,19 +1173,9 @@ class _SearchScreenState extends State<SearchScreen>
               : const SizedBox.shrink();
         }
 
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 300 + (index * 100)),
-          tween: Tween(begin: 0.0, end: 1.0),
-          curve: Curves.easeOutBack,
-          builder: (context, value, child) {
-            return Transform.scale(
-              scale: value,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
-                child: PrestadorListItem(prestador: _prestadores[index]),
-              ),
-            );
-          },
+        return Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+          child: PrestadorListItem(prestador: _prestadores[index]),
         );
       }, childCount: _prestadores.length + (_isLoadingMore ? 1 : 0)),
     );
@@ -1156,6 +1217,32 @@ class _SearchScreenState extends State<SearchScreen>
                 fontSize: 16,
                 color: Colors.grey.shade600,
                 height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _isFormExpanded = true;
+                });
+                _formController.forward();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.vinhoUltraUniodonto,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Tentar Nova Busca',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],

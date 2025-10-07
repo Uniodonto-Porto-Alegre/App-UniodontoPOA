@@ -111,7 +111,7 @@ class _ModernBottomNavigationState extends State<ModernBottomNavigation>
         builder: (context, child) {
           return Transform.scale(
             scale: _scaleAnimations[index].value,
-            child: Container(
+            child: SizedBox(
               width: 72,
               height: 56,
               child: Column(
@@ -279,10 +279,10 @@ class _UltraModernBottomNavigationState
       height: 88,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
-            const Color.fromARGB(255, 121, 0, 80),
-            const Color.fromARGB(255, 134, 1, 85),
+            Color.fromARGB(255, 121, 0, 80),
+            Color.fromARGB(255, 134, 1, 85),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -437,7 +437,7 @@ class _UltraModernBottomNavigationState
             child: GestureDetector(
               onTap: () => _onTap(index),
               behavior: HitTestBehavior.opaque,
-              child: Container(
+              child: SizedBox(
                 height: 88,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

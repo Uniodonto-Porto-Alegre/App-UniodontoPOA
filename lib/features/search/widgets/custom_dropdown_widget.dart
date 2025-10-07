@@ -45,7 +45,7 @@ class CustomDropdownWidget<T> extends StatelessWidget {
             color: enabled ? Colors.white : Colors.grey[50],
           ),
           child: DropdownButtonFormField<T>(
-            value: value,
+            initialValue: value,
             items: items.map((T item) {
               return DropdownMenuItem<T>(
                 value: item,

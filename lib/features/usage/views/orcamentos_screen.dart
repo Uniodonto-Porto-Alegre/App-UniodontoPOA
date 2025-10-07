@@ -53,9 +53,7 @@ class _OrcamentosScreenState extends State<OrcamentosScreen>
           });
         }
       }
-    } catch (e) {
-      print('Erro ao carregar dados do beneficiário: $e');
-    }
+    } catch (e) {}
   }
 
   @override
@@ -385,7 +383,7 @@ class _OrcamentosScreenState extends State<OrcamentosScreen>
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.medical_services,
                               color: AppColors.vinhoUltraUniodonto,
                             ),
@@ -441,7 +439,7 @@ class _OrcamentosScreenState extends State<OrcamentosScreen>
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Text(
+                            child: const Text(
                               'Aprovado',
                               style: TextStyle(
                                 fontSize: 12,

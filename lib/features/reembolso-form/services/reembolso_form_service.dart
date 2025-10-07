@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +24,7 @@ class ReembolsoFormService {
     final prefs = await SharedPreferences.getInstance();
     final cpf = prefs.getString('user_cpf');
 
-    print('CPF encontrado no SharedPreferences: $cpf'); // Debug
+    // Debug
 
     if (cpf == null || cpf.isEmpty) {
       throw FormSubmitException(
@@ -88,10 +87,6 @@ class ReembolsoFormService {
         );
       }
 
-      print(
-        'Arquivo convertido com sucesso: $fileName (${bytes.length} bytes)',
-      );
-
       return {
         "file_data": base64Image,
         "file_name": fileName,
@@ -128,8 +123,6 @@ class ReembolsoFormService {
           ? (arquivo is XFile ? arquivo.name : 'arquivo_desconhecido')
           : (arquivo is File ? arquivo.path : 'arquivo_desconhecido');
 
-      print('Processando arquivo ${i + 1}/${arquivos.length}: $arquivoInfo');
-
       try {
         final anexo = await _convertFileToBase64(arquivo);
         anexos.add(anexo);
@@ -141,7 +134,6 @@ class ReembolsoFormService {
       }
     }
 
-    print('Total de ${anexos.length} arquivos processados com sucesso');
     return anexos;
   }
 
@@ -191,27 +183,17 @@ class ReembolsoFormService {
     arquivos, // Alterado para aceitar tanto File quanto XFile
   }) async {
     try {
-      print('Iniciando validação dos campos...');
-
       // Valida campos obrigatórios
       _validateRequiredFields(formData);
-      print('Campos validados com sucesso');
-
-      print('Buscando CPF do usuário...');
 
       // Obtém o CPF do SharedPreferences
       final userCpf = await _getUserCpf();
-      print('CPF obtido: $userCpf');
-
-      print('Processando arquivos...');
 
       // Processa os arquivos
       final anexos = await _processFiles(arquivos);
-      print('Arquivos processados: ${anexos.length}');
 
       // Define a URL do endpoint
       final url = Uri.parse('$_baseUrl/email-reembolso');
-      print('URL da requisição: $url');
 
       // Cria o body da requisição no formato JSON atualizado
       final requestBody = {
@@ -248,32 +230,18 @@ class ReembolsoFormService {
         'Accept': 'application/json',
       };
 
-      print('Enviando requisição para: $url');
-      print('Número de anexos: ${anexos.length}');
-      print('Tamanho do body: ${body.length} caracteres');
-
       // Faz a requisição POST
       final response = await http.post(url, headers: headers, body: body);
 
-      print('Status da resposta: ${response.statusCode}');
-      print('Headers da resposta: ${response.headers}');
-
       // Analisa a resposta
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Reembolso solicitado com sucesso!');
-
         try {
-          final responseBody = jsonDecode(response.body);
-          print('Resposta da API (JSON): $responseBody');
-        } catch (e) {
-          print('Resposta da API (texto): ${response.body}');
-        }
+          jsonDecode(response.body);
+        } catch (e) {}
       } else {
         // Tenta obter mais detalhes do erro da API
         String errorMessage =
             'Erro ao enviar o formulário. Status: ${response.statusCode}';
-
-        print('Corpo da resposta de erro: ${response.body}');
 
         try {
           final errorBody = jsonDecode(response.body);
@@ -293,26 +261,20 @@ class ReembolsoFormService {
 
         throw FormSubmitException(errorMessage);
       }
-    } on SocketException catch (e) {
-      print('SocketException: $e');
+    } on SocketException {
       throw FormSubmitException(
         'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.',
       );
     } on HttpException catch (e) {
-      print('HttpException: $e');
       throw FormSubmitException(
         'Erro na comunicação com o servidor: ${e.message}',
       );
     } on FormatException catch (e) {
-      print('FormatException: $e');
       throw FormSubmitException('Erro no formato dos dados: ${e.message}');
-    } on FormSubmitException catch (e) {
-      print('FormSubmitException: ${e.message}');
+    } on FormSubmitException {
       // Re-throw FormSubmitException sem modificar
       rethrow;
-    } catch (e, stackTrace) {
-      print('Erro genérico: $e');
-      print('Stack trace: $stackTrace');
+    } catch (e) {
       throw FormSubmitException('Ocorreu um erro inesperado: $e');
     }
   }

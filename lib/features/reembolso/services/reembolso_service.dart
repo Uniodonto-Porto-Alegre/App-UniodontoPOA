@@ -48,7 +48,7 @@ class ReembolsoService {
       final beneficiarioJsonString = prefs.getString('beneficiario_data');
 
       if (beneficiarioJsonString == null) {
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Dados do beneficiário não encontrados. Faça login novamente.',
           ReembolsoServiceErrorType.authenticationError,
         );
@@ -58,7 +58,7 @@ class ReembolsoService {
           json.decode(beneficiarioJsonString) as List<dynamic>;
 
       if (beneficiarioListJson.isEmpty) {
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Lista de beneficiários vazia. Verifique seus dados.',
           ReembolsoServiceErrorType.dataError,
         );
@@ -69,7 +69,7 @@ class ReembolsoService {
       );
 
       if (beneficiarioTitular.carteira.isEmpty) {
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Carteira do beneficiário não encontrada.',
           ReembolsoServiceErrorType.dataError,
         );
@@ -130,22 +130,22 @@ class ReembolsoService {
 
       return response;
     } on SocketException {
-      throw ReembolsoServiceException(
+      throw const ReembolsoServiceException(
         'Erro de conexão. Verifique sua internet.',
         ReembolsoServiceErrorType.networkError,
       );
     } on HttpException {
-      throw ReembolsoServiceException(
+      throw const ReembolsoServiceException(
         'Erro de comunicação com o servidor.',
         ReembolsoServiceErrorType.networkError,
       );
     } on FormatException {
-      throw ReembolsoServiceException(
+      throw const ReembolsoServiceException(
         'Erro no formato da resposta do servidor.',
         ReembolsoServiceErrorType.serverError,
       );
     } catch (e) {
-      throw ReembolsoServiceException(
+      throw const ReembolsoServiceException(
         'Timeout na requisição. Tente novamente.',
         ReembolsoServiceErrorType.networkError,
       );
@@ -162,19 +162,19 @@ class ReembolsoService {
         return []; // Nenhuma solicitação encontrada
 
       case 401:
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Acesso negado. Faça login novamente.',
           ReembolsoServiceErrorType.authenticationError,
         );
 
       case 403:
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Você não tem permissão para acessar estes dados.',
           ReembolsoServiceErrorType.authorizationError,
         );
 
       case 500:
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Erro interno do servidor. Tente novamente mais tarde.',
           ReembolsoServiceErrorType.serverError,
         );
@@ -193,7 +193,7 @@ class ReembolsoService {
       final data = json.decode(responseBody) as Map<String, dynamic>;
 
       if (!data.containsKey('solicitacoes')) {
-        throw ReembolsoServiceException(
+        throw const ReembolsoServiceException(
           'Formato de resposta inválido: campo "solicitacoes" não encontrado.',
           ReembolsoServiceErrorType.dataError,
         );

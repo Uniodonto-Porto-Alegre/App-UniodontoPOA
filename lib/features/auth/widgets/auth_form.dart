@@ -146,7 +146,7 @@ class _ModernAuthFormState extends State<ModernAuthForm>
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
           color: AppColors.vinhoMedioUniodonto,
           width: 2.0,
         ),

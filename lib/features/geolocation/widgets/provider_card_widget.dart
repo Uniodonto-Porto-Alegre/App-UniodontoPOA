@@ -5,19 +5,15 @@ import '../models/provider_model.dart';
 class ProviderCardWidget extends StatelessWidget {
   final ProviderModel provider;
 
-  const ProviderCardWidget({
-    Key? key,
-    required this.provider,
-  }) : super(key: key);
+  const ProviderCardWidget({Key? key, required this.provider})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -78,10 +74,7 @@ class ProviderCardWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     provider.areaDeAtuacao,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                   ),
                 ),
               ],
@@ -98,17 +91,11 @@ class ProviderCardWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     provider.telefoneFormatado,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(
-                    Icons.call,
-                    color: Colors.green,
-                  ),
+                  icon: const Icon(Icons.call, color: Colors.green),
                   onPressed: () => _makePhoneCall(provider.telefoneFormatado),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -125,7 +112,10 @@ class ProviderCardWidget extends StatelessWidget {
                   label: const Text('Direções'),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
                 ),
                 TextButton.icon(
@@ -134,7 +124,10 @@ class ProviderCardWidget extends StatelessWidget {
                   label: const Text('Compartilhar'),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey.shade600,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
                 ),
               ],
@@ -150,18 +143,18 @@ class ProviderCardWidget extends StatelessWidget {
       scheme: 'tel',
       path: phoneNumber.replaceAll(RegExp(r'[^\d+]'), ''),
     );
-    
+
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     }
   }
 
   void _openMapsDirection(ProviderModel provider) async {
-    final String googleMapsUrl = 
+    final String googleMapsUrl =
         'https://www.google.com/maps/dir/?api=1&destination=${provider.latitude},${provider.longitude}';
-    
+
     final Uri uri = Uri.parse(googleMapsUrl);
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -169,14 +162,8 @@ class ProviderCardWidget extends StatelessWidget {
 
   void _shareProvider(ProviderModel provider) {
     // Implementar compartilhamento usando share_plus package
-    final String shareText = '''
-${provider.nome}
-${provider.areaDeAtuacao}
-Telefone: ${provider.telefoneFormatado}
-Localização: https://www.google.com/maps?q=${provider.latitude},${provider.longitude}
-    ''';
-    
+
     // Share.share(shareText);
-    print('Compartilhar: $shareText'); // Para debug
+    // Para debug
   }
 }

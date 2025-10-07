@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:convert';
 
 import '../services/auth_provider.dart';
 import '../services/odontosfera_auth_service.dart';
@@ -33,9 +32,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  // Estados para controle da validação paralela
+  // Estados para controle da autenticação (não mais coleta de dados)
   bool _isValidatingOdontosfera = false;
   String? _odontosferaError;
+
+  // Estado para rastrear se a autenticação foi bem-sucedida
+  bool _isLoginSuccessful = false;
+  OdontosferaLoginResult? _loginResult;
 
   @override
   void initState() {
@@ -100,12 +103,32 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
+  /// Salva dados do usuário e navega para o dashboard
+  /// APENAS quando a autenticação foi confirmadamente bem-sucedida
   Future<void> _navigateToDashboard() async {
     if (!mounted) return;
 
+    // VALIDAÇÃO CRÍTICA: Só navega se a autenticação foi realmente bem-sucedida
+    if (!_isLoginSuccessful || _loginResult == null || !_loginResult!.success) {
+      debugPrint('❌ Tentativa de navegação sem autenticação válida bloqueada!');
+      _showErrorDialog(
+        'Erro interno: Autenticação não foi validada corretamente.',
+      );
+      return;
+    }
+
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Salva APENAS o CPF do usuário autenticado
       await prefs.setString('user_cpf', _cpfController.text);
+
+      // Marca como autenticado com sucesso
+      await prefs.setBool('user_authenticated', true);
+      await prefs.setString('auth_timestamp', DateTime.now().toIso8601String());
+
+      debugPrint('✅ Usuário autenticado - CPF: ${_cpfController.text}');
+      debugPrint('✅ Navegando para dashboard após autenticação bem-sucedida');
 
       if (!mounted) return;
 
@@ -121,8 +144,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
       );
     } catch (e) {
+      debugPrint('❌ Erro ao salvar dados de autenticação: $e');
       if (mounted) {
-        _showErrorDialog('Erro ao salvar dados: $e');
+        _showErrorDialog('Erro ao salvar dados de autenticação: $e');
       }
     }
   }
@@ -150,9 +174,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  /// Validação paralela com Odontosfera
+  /// Validação focada APENAS na autenticação de credenciais
   Future<void> _validateWithOdontosfera() async {
-    if (!_formKey.currentState!.validate()) return;
+    // Limpa estados anteriores
+    _resetLoginState();
+
+    // Validação do formulário
+    if (!_formKey.currentState!.validate()) {
+      debugPrint('❌ Formulário inválido');
+      return;
+    }
 
     setState(() {
       _isValidatingOdontosfera = true;
@@ -160,43 +191,40 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     });
 
     try {
-      // Extrai apenas os números do CPF para usar como username
       final username = Validators.cleanCpf(_cpfController.text);
       final password = _passwordController.text;
 
-      // Chama a API da Odontosfera
+      // Validações básicas
+      if (username.length != 11) {
+        throw Exception('CPF deve conter 11 dígitos');
+      }
+
+      if (password.length < 3) {
+        throw Exception('Senha muito curta');
+      }
+
+      debugPrint('🔐 Iniciando autenticação para usuário: $username');
+
+      // Chama APENAS para validar credenciais
       final result = await OdontosferaAuthService.login(username, password);
 
       if (!mounted) return;
 
+      debugPrint('📥 Resposta de autenticação - Success: ${result.success}');
+
       if (result.success) {
-        // Login bem-sucedido na Odontosfera
+        // Credenciais validadas com sucesso!
+        _loginResult = result;
+        _isLoginSuccessful = true;
+
+        debugPrint('✅ Credenciais autenticadas com sucesso!');
         HapticFeedback.lightImpact();
 
-        // Salva dados da Odontosfera se disponíveis
-        final userData = result.userBasicData;
-        if (userData != null) {
-          try {
-            final SharedPreferences prefs =
-                await SharedPreferences.getInstance();
-            await prefs.setString(
-              'odontosfera_user_data',
-              json.encode(userData.toJson()),
-            );
-            await prefs.setString(
-              'odontosfera_login_response',
-              json.encode(result.userData ?? {}),
-            );
-          } catch (e) {
-            debugPrint('Erro ao salvar dados da Odontosfera: $e');
-            // Continua mesmo se não conseguir salvar os dados extras
-          }
-        }
-
-        // Procede para o dashboard
+        // Navega para o dashboard (onde os dados serão coletados)
         await _navigateToDashboard();
       } else {
-        // Falha na validação da Odontosfera
+        // Falha na autenticação
+        debugPrint('❌ Autenticação falhou: ${result.message}');
         setState(() {
           _odontosferaError = result.message;
         });
@@ -204,9 +232,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _showErrorDialog(result.message);
       }
     } catch (e) {
+      debugPrint('❌ Erro durante autenticação: $e');
       if (!mounted) return;
 
-      final errorMessage = 'Erro inesperado: ${e.toString()}';
+      final errorMessage = _getErrorMessage(e);
       setState(() {
         _odontosferaError = errorMessage;
       });
@@ -219,6 +248,32 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         });
       }
     }
+  }
+
+  /// Reseta o estado da autenticação
+  void _resetLoginState() {
+    _isLoginSuccessful = false;
+    _loginResult = null;
+    _odontosferaError = null;
+  }
+
+  /// Retorna mensagem de erro amigável baseada na exceção
+  String _getErrorMessage(dynamic error) {
+    final errorStr = error.toString().toLowerCase();
+
+    if (errorStr.contains('timeout')) {
+      return 'Tempo limite excedido. Verifique sua conexão.';
+    } else if (errorStr.contains('socket') || errorStr.contains('connection')) {
+      return 'Erro de conexão. Verifique sua internet.';
+    } else if (errorStr.contains('cpf')) {
+      return 'CPF inválido. Verifique o formato.';
+    } else if (errorStr.contains('senha')) {
+      return 'Senha inválida.';
+    } else if (errorStr.contains('format')) {
+      return 'Erro no formato dos dados recebidos.';
+    }
+
+    return 'Erro inesperado: ${error.toString()}';
   }
 
   void _showErrorDialog(String message) {
@@ -280,7 +335,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     final authProvider = Provider.of<AuthProvider>(context);
     final size = MediaQuery.of(context).size;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    void _handleLoginPress() {
+
+    void handleLoginPress() {
       _validateWithOdontosfera();
     }
 
@@ -347,7 +403,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               const SizedBox(height: 4),
 
                               // Welcome Text
-                              Text(
+                              const Text(
                                 'Bem-vindo de volta!',
                                 style: TextStyle(
                                   fontFamily: 'Georama',
@@ -493,11 +549,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 _isValidatingOdontosfera ||
                                 authProvider.isLoading,
                             text: _isValidatingOdontosfera
-                                ? 'Validando...'
+                                ? 'Autenticando...'
                                 : 'Entrar',
                             onPressed: _isValidatingOdontosfera
                                 ? null
-                                : _handleLoginPress,
+                                : handleLoginPress,
                           ),
                         ),
                       ),
@@ -564,7 +620,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   ),
                                   GestureDetector(
                                     onTap: _navigateToRegister,
-                                    child: Text(
+                                    child: const Text(
                                       'Cadastre-se',
                                       style: TextStyle(
                                         fontFamily: 'Georama',

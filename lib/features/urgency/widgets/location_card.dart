@@ -163,8 +163,8 @@ class _ModernLocationCardState extends State<ModernLocationCard>
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [const Color(0xFF8B1538), const Color(0xFFB91D47)],
+            gradient: const LinearGradient(
+              colors: [Color(0xFF8B1538), Color(0xFFB91D47)],
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
@@ -188,7 +188,7 @@ class _ModernLocationCardState extends State<ModernLocationCard>
             children: [
               Text(
                 widget.city,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3436),
@@ -205,7 +205,7 @@ class _ModernLocationCardState extends State<ModernLocationCard>
                     color: AppColors.vinhoClaroUniodonto,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
+                  child: const Text(
                     '24 HORAS',
                     style: TextStyle(
                       color: Colors.white,
@@ -234,15 +234,15 @@ class _ModernLocationCardState extends State<ModernLocationCard>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.access_time, color: const Color(0xFF8B1538), size: 20),
+          const Icon(Icons.access_time, color: Color(0xFF8B1538), size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               widget.schedule,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 height: 1.5,
-                color: const Color(0xFF636E72),
+                color: Color(0xFF636E72),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -281,9 +281,9 @@ class _ModernLocationCardState extends State<ModernLocationCard>
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 15,
-              color: const Color(0xFF2D3436),
+              color: Color(0xFF2D3436),
               height: 1.4,
             ),
           ),
@@ -333,8 +333,8 @@ class _ModernLocationCardState extends State<ModernLocationCard>
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           decoration: BoxDecoration(
             gradient: isPrimary
-                ? LinearGradient(
-                    colors: [const Color(0xFF8B1538), const Color(0xFFB91D47)],
+                ? const LinearGradient(
+                    colors: [Color(0xFF8B1538), Color(0xFFB91D47)],
                   )
                 : null,
             color: isPrimary ? null : Colors.grey[100],
@@ -381,10 +381,10 @@ class _ModernLocationCardState extends State<ModernLocationCard>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: const Row(
           children: [
             Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Text('Endereço copiado!'),
           ],
         ),
@@ -418,7 +418,7 @@ class _ModernLocationCardState extends State<ModernLocationCard>
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.white),
+            const Icon(Icons.error_outline, color: Colors.white),
             const SizedBox(width: 12),
             Text(message),
           ],

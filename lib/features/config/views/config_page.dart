@@ -162,7 +162,7 @@ class _ConfigPageState extends State<ConfigPage> {
   }
 
   Widget _buildLogoutButton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () => _showLogoutDialog(),
@@ -176,12 +176,12 @@ class _ConfigPageState extends State<ConfigPage> {
             side: BorderSide(color: Colors.red.withOpacity(0.3), width: 1),
           ),
         ),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.logout, size: 22),
-            const SizedBox(width: 12),
-            const Text(
+            SizedBox(width: 12),
+            Text(
               'Sair da Conta',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
@@ -269,15 +269,16 @@ class _ConfigPageState extends State<ConfigPage> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('beneficiario_data');
       await prefs.remove('user_cpf');
+      await prefs.remove('profile_image');
 
       // Mostra feedback do logout
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.white, size: 20),
-              const SizedBox(width: 12),
-              const Text(
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 12),
+              Text(
                 'Logout realizado com sucesso',
                 style: TextStyle(fontSize: 16),
               ),
@@ -294,13 +295,13 @@ class _ConfigPageState extends State<ConfigPage> {
 
       // Navegar para a tela de login removendo todas as rotas anteriores
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (route) => false,
       );
     } catch (e) {
       // Em caso de erro, ainda redireciona para o login
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (route) => false,
       );
     }

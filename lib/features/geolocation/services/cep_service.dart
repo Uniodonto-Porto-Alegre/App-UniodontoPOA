@@ -75,7 +75,6 @@ class CepService {
         throw Exception('Erro ao consultar CEP: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao buscar CEP: $e');
       throw Exception('Erro ao consultar CEP: $e');
     }
   }
@@ -89,7 +88,7 @@ class CepService {
       String fullAddress =
           '${address.logradouro}, ${address.bairro}, ${address.localidade}, ${address.uf}, Brasil';
 
-      final uri = Uri.parse('$_nominatimBaseUrl').replace(
+      final uri = Uri.parse(_nominatimBaseUrl).replace(
         queryParameters: {
           'q': fullAddress,
           'format': 'json',
@@ -116,7 +115,6 @@ class CepService {
         throw Exception('Erro ao buscar coordenadas: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao converter endereço em coordenadas: $e');
       throw Exception('Erro ao obter coordenadas: $e');
     }
   }
@@ -131,7 +129,6 @@ class CepService {
 
       return await getCoordinatesFromAddress(address);
     } catch (e) {
-      print('Erro ao obter coordenadas por CEP: $e');
       rethrow;
     }
   }

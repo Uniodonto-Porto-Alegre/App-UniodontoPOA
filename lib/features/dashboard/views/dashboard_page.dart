@@ -52,7 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
           // Inicializa a lista de páginas aqui, com o usuário real
           _pages = [
             DashboardMainContent(onCardTap: _onCardTap),
-            FeedPage(),
+            const FeedPage(),
             ConfigPage(
               user: _user!,
             ), // Agora temos certeza que _user não é nulo
@@ -65,7 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
         _user = User.mockUser;
         _pages = [
           DashboardMainContent(onCardTap: _onCardTap),
-          FeedPage(),
+          const FeedPage(),
           ConfigPage(user: _user!),
         ];
       });

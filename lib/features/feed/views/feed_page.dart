@@ -39,7 +39,6 @@ class _FeedPageState extends State<FeedPage> {
       setState(() => _comunicados = comunicados);
     } catch (e) {
       // Tratar erro
-      print('Erro ao carregar comunicados: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -91,7 +90,7 @@ class _FeedPageState extends State<FeedPage> {
       backgroundColor: Colors.white,
       elevation: 2,
       shadowColor: Colors.black.withOpacity(0.1),
-      title: Text(
+      title: const Text(
         'Comunicados',
         style: TextStyle(
           fontFamily: 'Georama',
@@ -104,7 +103,7 @@ class _FeedPageState extends State<FeedPage> {
       leading: Container(margin: const EdgeInsets.all(8)),
       actions: [
         IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.notifications_none_rounded,
             color: Colors.transparent,
           ),
@@ -217,7 +216,7 @@ class _FeedPageState extends State<FeedPage> {
                 // Título
                 Text(
                   comunicado.titulo,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Georama',
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -250,7 +249,7 @@ class _FeedPageState extends State<FeedPage> {
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.vinhoMedioUniodonto,
                           shape: BoxShape.circle,
                         ),

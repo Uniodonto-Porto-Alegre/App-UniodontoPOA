@@ -42,8 +42,9 @@ class PrestadorService {
     if (cidade.isNotEmpty) queryParams['cidade'] = cidade;
     if (bairro.isNotEmpty) queryParams['bairro'] = bairro;
     if (nome.isNotEmpty) queryParams['nome'] = nome;
-    if (areaDeAtuacao.isNotEmpty)
+    if (areaDeAtuacao.isNotEmpty) {
       queryParams['area_de_atuacao'] = areaDeAtuacao;
+    }
     if (cro.isNotEmpty) queryParams['cro'] = cro;
 
     final uri = Uri.parse(_baseUrl).replace(queryParameters: queryParams);

@@ -29,11 +29,9 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: AppColors.vinhoMedioUniodonto,
         secondary: AppColors.cianoUniodonto,
-        background: AppColors.fundoConteudo,
         surface: Colors.white,
         onPrimary: AppColors.corTexto,
         onSecondary: Colors.black,
-        onBackground: Colors.black,
         onSurface: Colors.black,
       ),
 

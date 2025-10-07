@@ -478,7 +478,7 @@ class PhoneInputFormatter extends TextInputFormatter {
     if (text.length <= 10) {
       // Format as (XX) XXXX-XXXX
       String formatted = '';
-      if (text.length >= 1) {
+      if (text.isNotEmpty) {
         formatted = '(${text.substring(0, text.length >= 2 ? 2 : text.length)}';
         if (text.length >= 3) {
           formatted +=
@@ -495,7 +495,7 @@ class PhoneInputFormatter extends TextInputFormatter {
     } else {
       // Format as (XX) XXXXX-XXXX
       String formatted = '';
-      if (text.length >= 1) {
+      if (text.isNotEmpty) {
         formatted =
             '(${text.substring(0, 2)}) ${text.substring(2, 7)}-${text.substring(7, 11)}';
       }

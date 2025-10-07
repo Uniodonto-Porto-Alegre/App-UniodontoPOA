@@ -365,15 +365,11 @@ class _UrgencyScreenState extends State<UrgencyScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(
-                Icons.lightbulb_outline,
-                color: Color(0xFF8B1538),
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              const Text(
+              Icon(Icons.lightbulb_outline, color: Color(0xFF8B1538), size: 24),
+              SizedBox(width: 12),
+              Text(
                 'Dicas importantes',
                 style: TextStyle(
                   fontSize: 18,

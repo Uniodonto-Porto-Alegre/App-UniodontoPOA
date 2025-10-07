@@ -340,7 +340,7 @@ class _GeolocationViewState extends State<GeolocationView>
                 padding: const EdgeInsets.all(10),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.search_rounded,
                       color: AppColors.vinhoUltraUniodonto,
                       size: 24,
@@ -376,7 +376,7 @@ class _GeolocationViewState extends State<GeolocationView>
                     AnimatedRotation(
                       turns: _isSearchOptionsExpanded ? 0.5 : 0,
                       duration: const Duration(milliseconds: 300),
-                      child: Icon(
+                      child: const Icon(
                         Icons.expand_more,
                         color: AppColors.vinhoMedioUniodonto,
                       ),
@@ -481,7 +481,7 @@ class _GeolocationViewState extends State<GeolocationView>
                         setState(() {
                           _cepController.value = TextEditingValue(
                             text: GeolocationService.formatCep(value),
-                            selection: TextSelection.collapsed(offset: 9),
+                            selection: const TextSelection.collapsed(offset: 9),
                           );
                         });
                       }
@@ -572,12 +572,12 @@ class _GeolocationViewState extends State<GeolocationView>
             if (showExpandButton && !_isSearchOptionsExpanded)
               TextButton.icon(
                 onPressed: _toggleSearchOptions,
-                icon: Icon(
+                icon: const Icon(
                   Icons.edit_location_alt,
                   size: 16,
                   color: AppColors.vinhoMedioUniodonto,
                 ),
-                label: Text(
+                label: const Text(
                   'Alterar',
                   style: TextStyle(
                     fontSize: 12,

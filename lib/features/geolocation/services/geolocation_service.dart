@@ -47,7 +47,6 @@ class GeolocationService {
         desiredAccuracy: LocationAccuracy.high,
       );
     } catch (e) {
-      print('Erro ao obter localização: $e');
       return null;
     }
   }
@@ -57,7 +56,6 @@ class GeolocationService {
     try {
       return await CepService.getCoordinatesByCep(cep);
     } catch (e) {
-      print('Erro ao obter coordenadas do CEP: $e');
       rethrow;
     }
   }
@@ -75,7 +73,6 @@ class GeolocationService {
         coordinates['longitude']!,
       );
     } catch (e) {
-      print('Erro ao buscar prestadores por CEP: $e');
       rethrow;
     }
   }
@@ -117,7 +114,6 @@ class GeolocationService {
         );
       }
     } catch (e) {
-      print('Erro na requisição: $e');
       throw Exception('Erro ao buscar prestadores: $e');
     }
   }

@@ -208,15 +208,7 @@ class _FinanceiroScreenState extends State<FinanceiroScreen>
           _navigateToMensalidade();
         },
       },
-      {
-        'icon': Icons.description,
-        'title': 'Informe de Rendimentos',
-        'subtitle': 'Gere seu informe (DMED) para declaração.',
-        'onTap': () {
-          // TODO: Navegar para a tela de Informe de Rendimentos
-          debugPrint('Navegando para Informe de Rendimentos...');
-        },
-      },
+
       {
         'icon': Icons.restore_page_rounded,
         'title': 'Reembolso',

@@ -390,7 +390,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: AppColors.vinhoMedioUniodonto,
                     width: 2.0,
                   ),
@@ -440,7 +440,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             ],
           ),
           child: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_rounded,
               color: AppColors.vinhoMedioUniodonto,
             ),
@@ -452,22 +452,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.vinhoMedioUniodonto.withOpacity(0.05),
               AppColors.fundoConteudo,
-              AppColors.goiabaUniodonto.withOpacity(0.05),
+              AppColors.fundoConteudo,
+              AppColors.fundoConteudo,
             ],
-            stops: const [0.0, 0.5, 1.0],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight:
@@ -480,7 +480,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 2),
 
                     // Header Section
                     FadeTransition(
@@ -519,14 +519,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                                   ),
                                 ],
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.lock_reset_rounded,
                                 size: 60,
                                 color: AppColors.vinhoMedioUniodonto,
                               ),
                             ),
 
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 2),
 
                             Text(
                               _passwordChanged
@@ -572,31 +572,79 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                       ),
                     ),
 
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 18),
 
                     // Content based on state
                     if (_passwordChanged) ...[
-                      // Success State
-                      FadeTransition(
-                        opacity: _successFadeAnimation,
-                        child: ScaleTransition(
-                          scale: _successScaleAnimation,
-                          child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(
-                                color: Colors.green[200]!,
-                                width: 2,
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              FadeTransition(
+                                opacity: _successFadeAnimation,
+                                child: ScaleTransition(
+                                  scale: _successScaleAnimation,
+                                  child: Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green[50],
+                                      borderRadius: BorderRadius.circular(60),
+                                      border: Border.all(
+                                        color: Colors.green[200]!,
+                                        width: 3,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.green[200]!.withOpacity(
+                                            0.3,
+                                          ),
+                                          blurRadius: 20,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 60,
+                                      color: Colors.green[600],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            child: Icon(
-                              Icons.check_circle_rounded,
-                              size: 50,
-                              color: Colors.green[600],
-                            ),
+                              const SizedBox(height: 24),
+                              FadeTransition(
+                                opacity: _successFadeAnimation,
+                                child: Text(
+                                  'Sua senha foi alterada\ncom sucesso!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Georama',
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.green[700],
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              FadeTransition(
+                                opacity: _successFadeAnimation,
+                                child: Text(
+                                  'Você já pode fazer login\ncom sua nova senha',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Georama',
+                                    fontSize: 16,
+                                    color: AppColors.goiabaUniodonto
+                                        .withOpacity(0.8),
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -856,7 +904,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                                                   ? _handlePasswordReset
                                                   : _handleIdentificationSubmit),
                                         borderRadius: BorderRadius.circular(16),
-                                        child: Container(
+                                        child: SizedBox(
                                           width: double.infinity,
                                           height: 56,
                                           child: Center(
@@ -941,76 +989,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
 
                       if (!_identificationFound) ...[
                         const SizedBox(height: 32),
-
-                        // Info Container
-                        FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: SlideTransition(
-                            position:
-                                Tween<Offset>(
-                                  begin: const Offset(0, 0.1),
-                                  end: Offset.zero,
-                                ).animate(
-                                  CurvedAnimation(
-                                    parent: _slideController,
-                                    curve: const Interval(
-                                      0.6,
-                                      1.0,
-                                      curve: Curves.easeOutCubic,
-                                    ),
-                                  ),
-                                ),
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: AppColors.cianoUniodonto.withOpacity(
-                                  0.08,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: AppColors.cianoUniodonto.withOpacity(
-                                    0.2,
-                                  ),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.cianoUniodonto
-                                          .withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Icon(
-                                      Icons.info_outline_rounded,
-                                      color: AppColors.cianoUniodonto,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      'Informe os dados cadastrados no sistema para prosseguir com a recuperação',
-                                      style: TextStyle(
-                                        fontFamily: 'Georama',
-                                        color: AppColors.goiabaUniodonto
-                                            .withOpacity(0.9),
-                                        fontSize: 14,
-                                        height: 1.4,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ],
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 12),
 
                     // Support Link
                     if (!_passwordChanged && !_identificationFound)
@@ -1035,7 +1017,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               // Implementar navegação para suporte
-                              print('Abrir suporte');
                             },
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.vinhoMedioUniodonto,
@@ -1048,7 +1029,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                               'Precisa de ajuda? Entre em contato com o suporte',
                               style: TextStyle(
                                 fontFamily: 'Georama',
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 decoration: TextDecoration.underline,
                                 decorationColor: AppColors.vinhoMedioUniodonto

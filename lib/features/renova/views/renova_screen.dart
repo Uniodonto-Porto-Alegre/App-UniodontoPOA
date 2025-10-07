@@ -242,7 +242,7 @@ class _RenovaScreenState extends State<RenovaScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(32.0),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [Colors.white, Colors.white],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -269,7 +269,7 @@ class _RenovaScreenState extends State<RenovaScreen>
       ),
       child: Column(
         children: [
-          Icon(
+          const Icon(
             Icons.sentiment_very_satisfied_rounded,
             size: 48,
             color: AppColors.vinhoMedioUniodonto,
@@ -306,7 +306,7 @@ class _RenovaScreenState extends State<RenovaScreen>
           width: 4,
           height: 32,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
                 AppColors.vinhoUltraUniodonto,
                 AppColors.vinhoUltraUniodonto,
@@ -565,7 +565,7 @@ class _RenovaScreenState extends State<RenovaScreen>
         ),
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
                 AppColors.vinhoUltraUniodonto,
                 AppColors.vinhoMedioUniodonto,

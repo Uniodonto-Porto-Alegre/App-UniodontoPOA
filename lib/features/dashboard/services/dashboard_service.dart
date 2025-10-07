@@ -33,7 +33,7 @@ class DashboardService {
       final String formattedCpf = storedCpf.replaceAll(RegExp(r'[.-]'), '');
       log('CPF formatado para a API: $formattedCpf');
 
-      final String token =
+      const String token =
           'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0NDgxMjMwMSwianRpIjoiZDYzODA3ZWEtOTUwNC00ZWQ0LWE2ODUtOTE3NjNlY2UwYTU2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6InRpIiwidGlwb19jaGF2ZSI6IklOVEVSTk8ifSwibmJmIjoxNzQ0ODEyMzAxLCJjc3JmIjoiZWFkMjVlYWEtMzY0Zi00NTU5LWE4ZWItZjE3NjljMjI3YjRjIiwiZXhwIjoxNzYwMzY0MzAxfQ.JEml0IwbJf2yNAmEZT8bl3mbTA4ZrqSMzC3FTkJ4NgE';
 
       // Passo 4: Fazer a consulta na API

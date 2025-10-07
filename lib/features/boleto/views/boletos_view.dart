@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -259,7 +258,7 @@ class _BoletosViewState extends State<BoletosView> {
   void _navigateToDash() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => DashboardPage()),
+      MaterialPageRoute(builder: (context) => const DashboardPage()),
     );
   }
 

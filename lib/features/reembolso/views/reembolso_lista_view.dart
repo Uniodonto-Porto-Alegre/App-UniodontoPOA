@@ -238,7 +238,10 @@ class _ReembolsoListaViewState extends State<ReembolsoListaView> {
         selectedColor: AppColors.limaUniodonto,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: AppColors.vinhoUltraUniodonto, width: 1.5),
+          side: const BorderSide(
+            color: AppColors.vinhoUltraUniodonto,
+            width: 1.5,
+          ),
         ),
         elevation: 0,
         pressElevation: 2,

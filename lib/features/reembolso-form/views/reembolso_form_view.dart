@@ -251,15 +251,8 @@ class _ModernReembolsoFormViewState extends State<ModernReembolsoFormView>
       });
 
       try {
-        print('=== INÍCIO DO ENVIO DO FORMULÁRIO ===');
-
         final formData = FormDataHelper.buildFormData(_controllers);
-        print('Dados do formulário:');
-        formData.forEach((key, value) {
-          print('$key: $value');
-        });
-
-        print('Chamando _formService.submitReembolso...');
+        formData.forEach((key, value) {});
 
         await _formService
             .submitReembolso(formData: formData, arquivos: _anexosRecibos)
@@ -273,43 +266,30 @@ class _ModernReembolsoFormViewState extends State<ModernReembolsoFormView>
               },
             );
 
-        print('Formulário enviado com sucesso!');
         ReembolsoFormUtils.showSuccessDialog(context);
       } on FormSubmitException catch (e) {
-        print('FormSubmitException capturada: ${e.toString()}');
         ReembolsoFormUtils.showErrorSnackbar(context, e.toString());
-      } on TimeoutException catch (e) {
-        print('TimeoutException: ${e.message}');
+      } on TimeoutException {
         ReembolsoFormUtils.showErrorSnackbar(
           context,
           'Tempo limite excedido. Verifique sua conexão e tente novamente.',
         );
-      } on SocketException catch (e) {
-        print('SocketException (problema de rede): $e');
+      } on SocketException {
         ReembolsoFormUtils.showErrorSnackbar(
           context,
           'Erro de conexão. Verifique sua internet e tente novamente.',
         );
-      } on HttpException catch (e) {
-        print('HttpException: $e');
+      } on HttpException {
         ReembolsoFormUtils.showErrorSnackbar(
           context,
           'Erro na comunicação com o servidor. Tente novamente.',
         );
-      } on FormatException catch (e) {
-        print('FormatException (resposta inválida): $e');
+      } on FormatException {
         ReembolsoFormUtils.showErrorSnackbar(
           context,
           'Resposta inválida do servidor. Tente novamente.',
         );
-      } catch (e, stackTrace) {
-        print('=== ERRO GENÉRICO CAPTURADO ===');
-        print('Tipo do erro: ${e.runtimeType}');
-        print('Erro: $e');
-        print('Stack trace:');
-        print(stackTrace);
-        print('=== FIM DO LOG DE ERRO ===');
-
+      } catch (e) {
         String errorMessage = 'Ocorreu um erro inesperado. Tente novamente.';
 
         if (kDebugMode) {
@@ -318,14 +298,11 @@ class _ModernReembolsoFormViewState extends State<ModernReembolsoFormView>
 
         ReembolsoFormUtils.showErrorSnackbar(context, errorMessage);
       } finally {
-        print('Finalizando _submitForm...');
         setState(() {
           _isSubmitting = false;
         });
       }
-    } else {
-      print('Formulário inválido - validação falhou');
-    }
+    } else {}
   }
 
   @override

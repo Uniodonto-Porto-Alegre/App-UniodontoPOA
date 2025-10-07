@@ -31,7 +31,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
   Future<void> _loadProfileImage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final imageBase64 = prefs.getString('profile_image_${widget.user.id}');
+      final imageBase64 = prefs.getString('profile_image');
       if (imageBase64 != null && mounted) {
         setState(() {
           _profileImageBase64 = imageBase64;
@@ -46,7 +46,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
   Future<void> _saveProfileImage(String base64Image) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('profile_image_${widget.user.id}', base64Image);
+      await prefs.setString('profile_image', base64Image);
     } catch (e) {
       debugPrint('Erro ao salvar imagem do perfil: $e');
     }
@@ -56,7 +56,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
   Future<void> _removeProfileImage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('profile_image_${widget.user.id}');
+      await prefs.remove('profile_image');
       if (mounted) {
         setState(() {
           _profileImageBase64 = null;

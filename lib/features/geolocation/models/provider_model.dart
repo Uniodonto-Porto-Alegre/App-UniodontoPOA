@@ -26,7 +26,7 @@ class ProviderModel {
   // A única alteração foi feita aqui dentro
   factory ProviderModel.fromJson(Map<String, dynamic> json) {
     // Função auxiliar para converter qualquer valor (String, int, double) para double
-    double? _parseToDouble(dynamic value) {
+    double? parseToDouble(dynamic value) {
       if (value == null) return null;
       if (value is num) return value.toDouble();
       if (value is String) return double.tryParse(value);
@@ -34,8 +34,8 @@ class ProviderModel {
     }
 
     // Função auxiliar para converter qualquer valor para int
-    int? _parseInt(dynamic value) {
-      final parsedDouble = _parseToDouble(value);
+    int? parseInt(dynamic value) {
+      final parsedDouble = parseToDouble(value);
       return parsedDouble?.toInt();
     }
 
@@ -47,16 +47,16 @@ class ProviderModel {
       celular: json['Celular'],
 
       // CORRIGIDO: Agora o DDD é convertido de forma segura
-      ddd: _parseInt(json['DDD']),
+      ddd: parseInt(json['DDD']),
 
       isEspecialista: json['Especialista'] == 'Sim',
 
       // PREVENÇÃO: Adicionada conversão segura para os outros campos numéricos
-      latitude: _parseToDouble(json['Latitude']) ?? 0.0,
-      longitude: _parseToDouble(json['Longitude']) ?? 0.0,
+      latitude: parseToDouble(json['Latitude']) ?? 0.0,
+      longitude: parseToDouble(json['Longitude']) ?? 0.0,
 
-      distancia: (_parseToDouble(json['distance']) != null)
-          ? _parseToDouble(json['distance'])! / 1000
+      distancia: (parseToDouble(json['distance']) != null)
+          ? parseToDouble(json['distance'])! / 1000
           : null,
     );
   }

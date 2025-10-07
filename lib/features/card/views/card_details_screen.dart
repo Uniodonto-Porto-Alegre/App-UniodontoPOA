@@ -17,7 +17,7 @@ class CardDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Carteirinha Digital'),
+        title: const Text('Carteirinha Digital'),
         backgroundColor:
             AppColors.vinhoUltraUniodonto, // Cor de fundo mais escura
         elevation: 0,
@@ -38,7 +38,7 @@ class CardDetailsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               // 5. Instrução clara para o usuário
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
@@ -46,8 +46,8 @@ class CardDetailsScreen extends StatelessWidget {
                     color: AppColors.vinhoUltraUniodonto,
                     size: 20,
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
+                  SizedBox(width: 10),
+                  Text(
                     'Toque no cartão para virar',
                     style: TextStyle(
                       color: AppColors.vinhoUltraUniodonto,

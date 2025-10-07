@@ -304,7 +304,7 @@ class _RegisterPageState extends State<RegisterPage>
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
           color: AppColors.vinhoMedioUniodonto,
           width: 2.0,
         ),
@@ -411,7 +411,7 @@ class _RegisterPageState extends State<RegisterPage>
             ],
           ),
           child: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_rounded,
               color: AppColors.vinhoMedioUniodonto,
             ),
@@ -482,7 +482,7 @@ class _RegisterPageState extends State<RegisterPage>
                                 ),
                               ],
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.person_add_rounded,
                               size: 50,
                               color: AppColors.vinhoMedioUniodonto,
@@ -491,7 +491,7 @@ class _RegisterPageState extends State<RegisterPage>
 
                           const SizedBox(height: 24),
 
-                          Text(
+                          const Text(
                             'Criar Conta',
                             style: TextStyle(
                               fontFamily: 'Georama',
@@ -564,7 +564,7 @@ class _RegisterPageState extends State<RegisterPage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // User Type Selection
-                              Text(
+                              const Text(
                                 'Tipo de usuário',
                                 style: TextStyle(
                                   fontFamily: 'Georama',
@@ -867,7 +867,7 @@ class _RegisterPageState extends State<RegisterPage>
                                   child: InkWell(
                                     onTap: _isLoading ? null : _handleSubmit,
                                     borderRadius: BorderRadius.circular(16),
-                                    child: Container(
+                                    child: SizedBox(
                                       width: double.infinity,
                                       height: 56,
                                       child: Center(
@@ -906,16 +906,16 @@ class _RegisterPageState extends State<RegisterPage>
                                                   ),
                                                 ],
                                               )
-                                            : Row(
+                                            : const Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  const Icon(
+                                                  Icon(
                                                     Icons.person_add_rounded,
                                                     color: Colors.white,
                                                     size: 20,
                                                   ),
-                                                  const SizedBox(width: 12),
-                                                  const Text(
+                                                  SizedBox(width: 12),
+                                                  Text(
                                                     'Criar Conta',
                                                     style: TextStyle(
                                                       fontFamily: 'Georama',
